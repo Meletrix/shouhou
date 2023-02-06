@@ -3,7 +3,7 @@
     <n-card
       title="Meletrix售后申请"
       size="large"
-      hoverable="true"
+      :hoverable="hoverable"
       :bordered="false"
       style="margin: calc(2vh) calc(15vw) 0px calc(15vw)"
     >
@@ -27,7 +27,9 @@
             @keydown.enter.prevent
           />
         </n-form-item>
-
+        <n-form-item path="order_photo" label="请添加与您售后相关的图片">
+          <Photo />
+        </n-form-item>
         <div style="text-align: center">
           <n-button
             :disabled="
@@ -35,6 +37,7 @@
               aftersale.order_type === '' ||
               aftersale.order_number === null ||
               aftersale.order_type === null ||
+              aftersale.phone_number === null ||
               aftersale.phone_number.length != 11
             "
             round
@@ -59,10 +62,12 @@ import { useMessage } from "naive-ui";
 import { ref } from "vue";
 import axios from "axios";
 import Cascader from "./CascaderView.vue";
+import Photo from "./PhotoView.vue";
 
 const formRef = ref<FormInst | null>(null);
 const message = useMessage();
 const aftersale = useAfterSale();
+const hoverable = ref(true);
 
 const signinClick = (e: MouseEvent) => {
   console.log(aftersale.$state);
@@ -97,8 +102,11 @@ const rules: FormRules = {
     {
       required: true,
       validator(rule: FormItemRule, value: string) {
-        if (aftersale.phone_number.length != 11) {
-          return new Error("需要11位手机号");
+        if (
+          aftersale.phone_number != null &&
+          aftersale.phone_number.length != 11
+        ) {
+          return new Error("请填写正确的手机号");
         }
         return true;
       },
