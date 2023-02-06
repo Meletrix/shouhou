@@ -1,58 +1,41 @@
 <template>
   <div style="display: flex">
     <n-card
-      title="Wuque Studio售后申请"
+      title="Meletrix售后申请"
       size="large"
       hoverable="true"
       :bordered="false"
       style="margin: calc(2vh) calc(15vw) 0px calc(15vw)"
     >
-      <n-form ref="formRef" :model="info" :rules="rules">
-        <n-form-item path="name" label="请输入您购买渠道的订单编号">
+      <n-form ref="formRef" :model="aftersale" :rules="rules">
+        <n-form-item path="order_number" label="请输入您购买渠道的订单编号">
           <n-input
-            v-model:value="info.name"
+            v-model:value="aftersale.order_number"
             @keydown.enter.prevent
             placeholder="(官网/抖店/其他)"
           />
         </n-form-item>
 
-        <n-form-item path="discord" label="请输入您的售后类型">
-          <n-input
-            v-model:value="info.discord"
-            @keydown.enter.prevent
-            placeholder="(售后类型不同，寄回地址会有变化，请谨慎选择)"
-          />
+        <n-form-item path="order_type" label="请输入您的售后类型">
+          <Cascader />
         </n-form-item>
 
-        <n-form-item path="email" label="售后对接小助理名称">
+        <n-form-item path="order_phone" label="手机号联系方式">
           <n-input
-            v-model:value="info.email"
-            type="email"
-            placeholder="请将其他渠道的联系人方式填写在底部备注栏"
+            v-model:value="aftersale.phone_number"
+            placeholder="请填入您的手机号"
             @keydown.enter.prevent
-          />
-        </n-form-item>
-
-        <n-form-item path="country" label="请输入您与小助理确认后的售后编码">
-          <n-input
-            v-model:value="info.country"
-            @keydown.enter.prevent
-            placeholder="售后编码请于小助理确认后填写"
           />
         </n-form-item>
 
         <div style="text-align: center">
           <n-button
             :disabled="
-              info.name === '' ||
-              info.country === '' ||
-              info.discord === '' ||
-              info.email === '' ||
-              info.name === null ||
-              info.country === null ||
-              info.discord === null ||
-              info.email === null ||
-              !info.email.includes('@')
+              aftersale.order_number === '' ||
+              aftersale.order_type === '' ||
+              aftersale.order_number === null ||
+              aftersale.order_type === null ||
+              aftersale.phone_number.length != 11
             "
             round
             type="primary"
@@ -70,85 +53,56 @@
 </template>
 
 <script setup lang="ts">
-import { useInfoStore } from "@/stores/info";
+import { useAfterSale } from "@/stores/shouhou";
 import type { FormInst, FormItemRule, FormRules } from "naive-ui";
 import { useMessage } from "naive-ui";
 import { ref } from "vue";
 import axios from "axios";
+import Cascader from "./CascaderView.vue";
 
 const formRef = ref<FormInst | null>(null);
 const message = useMessage();
-const info = useInfoStore();
+const aftersale = useAfterSale();
 
 const signinClick = (e: MouseEvent) => {
-  console.log(info.$state);
-
-  e.preventDefault();
-  formRef.value?.validate(async () => {
-    try {
-      await axios
-        .post("https://120.79.0.147/api/notify", info.$state, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          console.log(res.data);
-          message.success("Success");
-        });
-    } catch (e: any) {
-      message.error("Fail: " + e.response!.data.message);
-    }
-  });
+  console.log(aftersale.$state);
 };
 
 const rules: FormRules = {
-  name: [
+  order_number: [
     {
       required: true,
       validator(rule: FormItemRule, value: string) {
         if (!value) {
-          return new Error("empty name");
+          return new Error("订单号不能为空");
         }
         return true;
       },
       trigger: ["input", "blur"],
     },
   ],
-  discord: [
+  order_type: [
     {
       required: true,
       validator(rule: FormItemRule, value: string) {
         if (!value) {
-          return new Error("empty discord");
+          return new Error("售后类型不能为空");
         }
         return true;
       },
       trigger: ["input", "blur"],
     },
   ],
-  country: [
+  order_phone: [
     {
       required: true,
       validator(rule: FormItemRule, value: string) {
-        if (!value) {
-          return new Error("empty country");
+        if (aftersale.phone_number.length != 11) {
+          return new Error("需要11位手机号");
         }
         return true;
       },
       trigger: ["input", "blur"],
-    },
-  ],
-  email: [
-    {
-      required: true,
-      validator(rule: FormItemRule, value: string) {
-        if (!value.includes("@")) {
-          return new Error("incorrect email");
-        }
-        return true;
-      },
-      trigger: "input",
     },
   ],
 };

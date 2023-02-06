@@ -4,25 +4,15 @@ import TheMain from "../components/MainView.vue";
 
 <template>
   <head>
-    <!--Content in content_for_header -->
-    <!--LayoutHub-Embed-->
-    <!--LH-->
-    <!--/LayoutHub-Embed-->
-    <!-- Basic page needs ================================================== -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
-    <!-- Helpers ================================================== -->
-    <!-- /snippets/social-meta-tags.liquid -->
-
-    <!-- CSS ================================================== -->
   </head>
   <header style="position: relative; padding-bottom: 70px">
     <div
       id="header_img"
       style="position: absolute; left: 50%; margin: 0 0 0 -135px"
     >
-      <img width="270px" src="../assets/imgs/logo.png" />
+      <img width="270px" src="../assets/imgs/meletrix.png" />
     </div>
   </header>
   <main>
