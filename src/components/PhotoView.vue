@@ -1,13 +1,18 @@
 <template>
+  <!--  :disabled="
+      aftersale.phone_number?.length != 11 ||
+      aftersale.order_number == null ||
+      aftersale.order_type == null
+    " -->
   <n-upload
-    ref="uploadRef"
+    :file-list="fileList"
     action="https://3facc2d6-6d1a-4eda-aed1-0ceeb19b18fd.mock.pstmn.io/photo2"
-    :default-file-list="fileList"
     list-type="image-card"
     :default-upload="false"
-    :disabled="aftersale.phone_number?.length != 11 || fileList.length >= 3"
     multiple
     @change="handleChange"
+    :max="3"
+    accept="image/png, image/jpeg"
   >
     +
   </n-upload>
@@ -31,12 +36,11 @@ const fileListLength = ref(0);
 const uploadRef = ref<UploadInst | null>(null);
 const fileList = ref<UploadFileInfo[]>([]);
 const handleChange = (options: { fileList: UploadFileInfo[] }) => {
-  fileList.value = options.fileList;
   fileListLength.value = options.fileList.length;
+  fileList.value = options.fileList;
 };
 const handleClick = () => {
-  console.log(uploadRef);
-  console.log(uploadRef.value);
+  console.log(fileList.value);
   uploadRef.value?.submit();
 };
 </script>

@@ -27,7 +27,10 @@
             @keydown.enter.prevent
           />
         </n-form-item>
-        <n-form-item path="order_photo" label="请添加与您售后相关的图片">
+        <n-form-item
+          path="order_photo"
+          label="请添加与您售后相关的图片(请先填写其他信息)"
+        >
           <Photo />
         </n-form-item>
         <div style="text-align: center">
@@ -47,7 +50,7 @@
             @click="signinClick"
             style="margin: 4px 2px; padding: 20px 50px"
           >
-            Notify me
+            提交
           </n-button>
         </div>
       </n-form>
