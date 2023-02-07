@@ -4,6 +4,184 @@ const multer = require("multer");
 const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
+const mysql = require("mysql2");
+const dbConfig = {
+  HOST: "127.0.0.1",
+  USER: "root",
+  PASSWORD: "010307",
+  DB: "aftersales",
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+};
+var sql = mysql.createPool({
+  host: dbConfig.HOST,
+  user: dbConfig.USER,
+  password: dbConfig.PASSWORD,
+  database: dbConfig.DB,
+  dialect: dbConfig.dialect,
+  port: dbConfig.port,
+  operatorsAliases: false,
+});
+
+class Aftersales {
+  constructor(aftersales) {
+    this.order_number = aftersales.order_number;
+    this.order_type = aftersales.order_type;
+    this.phone_number = aftersales.phone_number;
+  }
+
+  static create(newAftersales, result) {
+    sql.query(
+      `SELECT * FROM meletrix WHERE phone_number = '${newAftersales.phone_number}'`,
+      (err, res) => {
+        if (err) {
+          console.log("error: ", err);
+          result(err, null);
+          return;
+        }
+        if (res.length != 0) {
+          result("未完成", null);
+          return;
+        }
+      }
+    );
+    sql.query("INSERT INTO meletrix SET ?", newAftersales, (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+
+      console.log("created meletrix: ", { id: res.insertId, ...newAftersales });
+      result(null, { id: res.insertId, ...newAftersales });
+    });
+  }
+
+  static insert(photoName, phoneNumber, result) {
+    sql.query(
+      `SELECT photo_1 FROM meletrix WHERE phone_number = '${phoneNumber}'`,
+      (err, res) => {
+        if (err) {
+          console.log("error: ", err);
+          result(err, null);
+          return;
+        }
+        console.log(res);
+        if (res[0].photo_1 != "NULL") {
+          sql.query(
+            `SELECT photo_2 FROM meletrix WHERE phone_number = '${phoneNumber}'`,
+            (err, res) => {
+              if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+              }
+              if (res[0].photo_2 != "NULL") {
+                sql.query(
+                  `SELECT photo_3 FROM meletrix WHERE phone_number = '${phoneNumber}'`,
+                  (err, res) => {
+                    if (err) {
+                      console.log("error: ", err);
+                      result(err, null);
+                      return;
+                    }
+                    if (res[0].photo_3 != "NULL") {
+                      result("already have 3 photos", null);
+                      return;
+                    }
+                    sql.query(
+                      "UPDATE meletrix SET photo_3 = ?  WHERE phone_number = ?",
+                      [photoName, phoneNumber],
+                      (err, res) => {
+                        if (err) {
+                          console.log("error: ", err);
+                          result(err, null);
+                          return;
+                        }
+
+                        console.log("update meletrix: ", {
+                          id: res.insertId,
+                          photoName,
+                        });
+                        result(null, { photoName, phoneNumber });
+                      }
+                    );
+                  }
+                );
+
+                return;
+              }
+              sql.query(
+                "UPDATE meletrix SET photo_2 = ?  WHERE phone_number = ?",
+                [photoName, phoneNumber],
+                (err, res) => {
+                  if (err) {
+                    console.log("error: ", err);
+                    result(err, null);
+                    return;
+                  }
+
+                  console.log("update meletrix: ", {
+                    id: res.insertId,
+                    photoName,
+                  });
+                  result(null, { photoName, phoneNumber });
+                }
+              );
+            }
+          );
+          return;
+        }
+        sql.query(
+          "UPDATE meletrix SET photo_1 = ?  WHERE phone_number = ?",
+          [photoName, phoneNumber],
+          (err, res) => {
+            if (err) {
+              console.log("error: ", err);
+              result(err, null);
+              return;
+            }
+
+            console.log("update meletrix: ", {
+              id: res.insertId,
+              photoName,
+            });
+            result(null, { photoName, phoneNumber });
+          }
+        );
+      }
+    );
+  }
+
+  static delete(photoName, phone) {
+    var flag = 0;
+    sql.query(
+      `SELECT * FROM meletrix WHERE phone_number = '${phone}'`,
+      (err, res) => {
+        if (res[0].photo_1 == photoName) {
+          flag = 1;
+        } else if (res[0].photo_2 == photoName) {
+          flag = 2;
+        } else if (res[0].photo_3 == photoName) {
+          flag = 3;
+        } else {
+          flag = 0;
+        }
+        sql.query(
+          "UPDATE meletrix SET photo_" + flag + " = ? where phone_number = ?",
+          ["NULL", phone],
+          (err, res) => {
+            console.log(res);
+          }
+        );
+      }
+    );
+  }
+}
 
 const app = express();
 
@@ -11,13 +189,9 @@ app.use(cors());
 app.use(express.json());
 const path = "/root/aftersales/meletrix/";
 
-const check_filename = (phone_num, id) => {
-  if (
-    !fs.existsSync(path + "imgs/" + phone_num + "_" + id + ".jpeg") &&
-    !fs.existsSync(path + "imgs/" + phone_num + "_" + id + ".jpg") &&
-    !fs.existsSync(path + "imgs/" + phone_num + "_" + id + ".png")
-  ) {
-    return phone_num + "_" + id;
+const check_filename = (phone_num, id, end) => {
+  if (!fs.existsSync(path + "imgs/" + phone_num + "_" + id + end)) {
+    return phone_num + "_" + id + end;
   }
 };
 
@@ -28,8 +202,11 @@ const storage_meletrix = multer.diskStorage({
   filename: (req, file, cb) => {
     cb(
       null,
-      check_filename(req.body.phone, req.body.id) +
+      check_filename(
+        req.body.phone,
+        req.body.id,
         file.originalname.substring(file.originalname.lastIndexOf("."))
+      )
     );
   },
 });
@@ -44,6 +221,30 @@ router.post("/", Data_meletrix.any("files"), (req, res) => {
     });
   } else {
     res.status(200).send({ status: "finished" });
+    Aftersales.insert(req.body.id, req.body.phone);
+  }
+});
+
+router.post("/submit", (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      status: "error",
+      message: "Body can not be empty!",
+    });
+  } else {
+    console.log(req.body);
+    const as = new Aftersales({
+      order_number: req.body.order_number,
+      order_type: req.body.order_type,
+      phone_number: req.body.phone_number,
+    });
+    Aftersales.create(as, (err, data) => {
+      if (err)
+        res.status(500).send({
+          message: err.message || ":您还有未完成的售后申请",
+        });
+      else res.status(200).send(data);
+    });
   }
 });
 
@@ -68,6 +269,7 @@ router.post("/delect", (req, res) => {
     res.status(200).send({
       message: "Delect success",
     });
+    Aftersales.delete(req.body.id, req.body.phone);
   }
   res.end();
 });
@@ -83,7 +285,7 @@ const options = {
 };
 const httpsServer = https.createServer(options, app);
 
-const PORT = process.env.PORT || 9001;
+const PORT = process.env.PORT || 6666;
 
 httpsServer.listen(PORT, function () {
   console.log(`http Server is running on port ${PORT}.`);

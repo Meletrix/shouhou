@@ -64,7 +64,8 @@
               :disabled="
                 aftersale.phone_number?.length != 11 ||
                 aftersale.order_number == null ||
-                aftersale.order_type == null||!active
+                aftersale.order_type == null ||
+                !active
               "
             >
               +
@@ -113,8 +114,23 @@ const active = ref(false);
 const screenwidth = ref(window.screen.width < 640 ? true : false);
 
 const doClick = async () => {
-  console.log(aftersale.$state);
   active.value = true;
+  try {
+    await axios.post(
+      "https://120.79.0.147:6666/api/aftersales/meletrix/submit",
+      aftersale.$state,
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    );
+    message.success("提交成功");
+  } catch (e: any) {
+    console.log(e.response!.data.message);
+
+    message.error("提交失败" + e.response!.data.message);
+  }
 };
 
 const rules: FormRules = {
