@@ -11,8 +11,7 @@
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/x-www-form-urlencoded',
     }"
-    action="https://3facc2d6-6d1a-4eda-aed1-0ceeb19b18fd.mock.pstmn.io/photo2"
-    :data="fileList.forEach((element) => element.file?.arrayBuffer())"
+    action="http://127.0.0.1:9000/api/shouhou/meletrix"
     list-type="image-card"
     :default-upload="false"
     multiple
@@ -47,9 +46,7 @@ const handleChange = (options: { fileList: UploadFileInfo[] }) => {
   fileList.value = options.fileList;
 };
 const handleClick = () => {
-  console.log();
   uploadRef.value?.submit();
-
   message.info("上传文件");
 };
 </script>
