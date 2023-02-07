@@ -45,7 +45,7 @@
           </n-form-item>
           <n-form-item
             path="order_photo"
-            label="请添加与您售后相关的图片(请先填写其他信息并提交信息后再上传图片)"
+            label="请添加与您售后相关的图片(请先填写其他信息并提交后再上传至多3张图片)"
           >
             <n-upload
               ref="uploadRef"
