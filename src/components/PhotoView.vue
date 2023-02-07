@@ -5,6 +5,9 @@
     ref="uploadRef"
     :headers="{
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers':
+        'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization',
     }"
     action="https://120.79.0.147:9999/api/aftersales/meletrix"
     :data="{ phone: aftersale.phone_number, id: temp_id }"
@@ -59,6 +62,9 @@ const onRemove = async (options: {
       {
         headers: {
           "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers":
+            "DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization",
           "Content-Type": "application/json",
         },
       }

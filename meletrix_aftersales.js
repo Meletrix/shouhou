@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const cors = require("cors");
 const fs = require("fs");
+const http = require("http");
 
 const app = express();
 
@@ -73,6 +74,14 @@ router.post("/delect", (req, res) => {
 
 app.use("/api/aftersales/meletrix", router);
 
-app.listen(9001, () => {
-  console.log("Server is running");
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to aftersales meletrix." });
+});
+
+const httpServer = http.createServer(app);
+
+const PORT = process.env.PORT || 9001;
+
+httpServer.listen(PORT, function () {
+  console.log(`http Server is running on port ${PORT}.`);
 });
