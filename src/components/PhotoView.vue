@@ -6,7 +6,7 @@
     :headers="{
       'Access-Control-Allow-Origin': '*',
     }"
-    action="http://120.79.0.147:6666/api/aftersales/meletrix"
+    action="https://120.79.0.147:6666/api/aftersales/meletrix"
     :data="{ phone: aftersale.phone_number, id: temp_id }"
     list-type="image-card"
     @change="handleChange"
@@ -54,7 +54,7 @@ const onRemove = async (options: {
   const temp_data = { phone: aftersale.phone_number, id: options.file.id };
   try {
     await axios.post(
-      "http://120.79.0.147:6666/api/aftersales/meletrix/delect",
+      "https://120.79.0.147:6666/api/aftersales/meletrix/delect",
       temp_data,
       {
         headers: {
