@@ -74,6 +74,7 @@ const hoverable = ref(true);
 
 const signinClick = (e: MouseEvent) => {
   console.log(aftersale.$state);
+  message.success("提交成功");
 };
 
 const rules: FormRules = {

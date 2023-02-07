@@ -11,8 +11,8 @@
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/x-www-form-urlencoded',
     }"
-    action="https://photo.free.beeceptor.com"
-    :data="fileList[0]?.file?.arrayBuffer()"
+    action="https://3facc2d6-6d1a-4eda-aed1-0ceeb19b18fd.mock.pstmn.io/photo2"
+    :data="fileList.forEach((element) => element.file?.arrayBuffer())"
     list-type="image-card"
     :default-upload="false"
     multiple
@@ -33,9 +33,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useMessage } from "naive-ui";
 import type { UploadFileInfo, UploadInst } from "naive-ui";
 import { useAfterSale } from "@/stores/shouhou";
-
+const message = useMessage();
 const aftersale = useAfterSale();
 
 const fileListLength = ref(0);
@@ -47,8 +48,9 @@ const handleChange = (options: { fileList: UploadFileInfo[] }) => {
 };
 const handleClick = () => {
   console.log();
-
   uploadRef.value?.submit();
+
+  message.info("上传文件");
 };
 </script>
 
