@@ -8,7 +8,7 @@
         :hoverable="hoverable"
         :bordered="false"
       >
-        <template v-if="screenwidth <= 640" #cover>
+        <template v-if="screenwidth" #cover>
           <img src="@/assets/imgs/meletrix.png" />
         </template>
         <n-form ref="formRef" :model="aftersale" :rules="rules">
@@ -112,10 +112,7 @@ const message = useMessage();
 const aftersale = useAfterSale();
 const hoverable = ref(true);
 const active = ref(false);
-const screenwidth = ref(0);
-window.onresize = () => {
-  screenwidth.value = document.body.clientWidth;
-};
+const screenwidth = ref(window.screen.width < 640 ? false : true);
 
 const doClick = async () => {
   console.log(aftersale.$state);
