@@ -63,7 +63,8 @@
               aftersale.order_number === null ||
               aftersale.order_type === null ||
               aftersale.phone_number === null ||
-              aftersale.phone_number.length != 11
+              aftersale.phone_number.length != 11 ||
+              fileListLength == 0
             "
             round
             type="primary"
@@ -94,9 +95,9 @@ const message = useMessage();
 const aftersale = useAfterSale();
 const hoverable = ref(true);
 
-const doClick = () => {
-  uploadRef.value?.submit;
+const doClick = async () => {
   console.log(aftersale.$state);
+  await uploadRef.value?.submit();
   message.success("提交成功");
 };
 
