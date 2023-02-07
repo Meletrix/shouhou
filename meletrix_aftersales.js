@@ -70,7 +70,6 @@ class Aftersales {
           result(err, null);
           return;
         }
-        console.log(res);
         if (res[0].photo_1 != "NULL") {
           sql.query(
             `SELECT photo_2 FROM meletrix WHERE phone_number = '${phoneNumber}'`,
@@ -221,7 +220,9 @@ router.post("/", Data_meletrix.any("files"), (req, res) => {
     });
   } else {
     res.status(200).send({ status: "finished" });
-    Aftersales.insert(req.body.id, req.body.phone);
+    const originalFile = req.files[0];
+    console.log(originalFile.filename);
+    Aftersales.insert(originalFile.filename, req.body.phone);
   }
 });
 
@@ -232,7 +233,6 @@ router.post("/submit", (req, res) => {
       message: "Body can not be empty!",
     });
   } else {
-    console.log(req.body);
     const as = new Aftersales({
       order_number: req.body.order_number,
       order_type: req.body.order_type,
@@ -256,20 +256,22 @@ router.post("/delect", (req, res) => {
     });
   } else {
     const temp_path = path + "imgs/" + req.body.phone + "_" + req.body.id;
-
+    const fileName = req.body.phone + "_" + req.body.id;
     if (fs.existsSync(temp_path + ".jpeg")) {
       fs.unlinkSync(temp_path + ".jpeg");
+      Aftersales.delete(fileName + ".jpeg", req.body.phone);
     }
     if (fs.existsSync(temp_path + ".jpg")) {
       fs.unlinkSync(temp_path + ".jpg");
+      Aftersales.delete(fileName + ".jpg", req.body.phone);
     }
     if (fs.existsSync(temp_path + ".png")) {
       fs.unlinkSync(temp_path + ".png");
+      Aftersales.delete(fileName + ".png", req.body.phone);
     }
     res.status(200).send({
       message: "Delect success",
     });
-    Aftersales.delete(req.body.id, req.body.phone);
   }
   res.end();
 });
