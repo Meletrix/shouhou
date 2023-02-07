@@ -7,7 +7,10 @@
   <n-upload
     ref="uploadRef"
     :file-list="fileList"
-    :headers="{ 'Access-Control-Allow-Origin': '*' }"
+    :headers="{
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }"
     action="https://photo.free.beeceptor.com"
     :data="fileList[0]?.file?.arrayBuffer()"
     list-type="image-card"
