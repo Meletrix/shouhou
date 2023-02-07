@@ -3,24 +3,21 @@ import TheMain from "../components/MainView.vue";
 </script>
 
 <template>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  </head>
-  <header style="position: relative; padding-bottom: 70px">
-    <div
-      id="header_img"
-      style="position: absolute; left: 50%; margin: 0 0 0 -135px"
-    >
-      <img width="270px" src="../assets/imgs/meletrix.png" />
-    </div>
-  </header>
-  <main>
-    <TheMain />
-  </main>
+  <div class="Background">
+    <main>
+      <TheMain />
+    </main>
+  </div>
 </template>
 
 <style>
+.Background {
+  background: url("@/assets/imgs/bg-login.jpg") no-repeat;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  position: fixed;
+}
 .header-wrapper .site-nav__link,
 .header-wrapper .site-header__logo a,
 .header-wrapper .site-nav__dropdown-link,

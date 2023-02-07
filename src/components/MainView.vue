@@ -1,96 +1,102 @@
 <template>
-  <div style="display: flex">
-    <n-card
-      title="Meletrix售后申请"
-      size="large"
-      :hoverable="hoverable"
-      :bordered="false"
-      style="margin: calc(2vh) calc(15vw) 0px calc(15vw)"
-    >
-      <n-form ref="formRef" :model="aftersale" :rules="rules">
-        <n-form-item path="order_number" label="请输入您购买渠道的订单编号">
-          <n-input
-            v-model:value="aftersale.order_number"
-            :disabled="active"
-            @keydown.enter.prevent
-            placeholder="(官网/抖店/其他)"
-          />
-        </n-form-item>
+  <n-grid :cols="14">
+    <n-gi :span="2"></n-gi>
+    <n-gi :span="10">
+      <n-card
+        title="Meletrix售后申请"
+        size="large"
+        :hoverable="hoverable"
+        :bordered="false"
+      >
+        <template v-if="screenwidth <= 640" #cover>
+          <img src="@/assets/imgs/meletrix.png" />
+        </template>
+        <n-form ref="formRef" :model="aftersale" :rules="rules">
+          <n-form-item path="order_number" label="请输入您购买渠道的订单编号">
+            <n-input
+              v-model:value="aftersale.order_number"
+              :disabled="active"
+              @keydown.enter.prevent
+              placeholder="(官网/抖店/其他)"
+            />
+          </n-form-item>
 
-        <n-form-item path="order_type" label="请输入您的售后类型">
-          <n-cascader
-            v-model:value="aftersale.order_type"
-            placeholder="请选择您的售后类型及物件"
-            :expand-trigger="hoverTrigger ? 'hover' : 'click'"
-            :options="options"
-            :cascade="cascade"
-            :check-strategy="'child'"
-            :show-path="true"
-            :filterable="false"
-            :disabled="active"
-          />
-        </n-form-item>
+          <n-form-item path="order_type" label="请输入您的售后类型">
+            <n-cascader
+              v-model:value="aftersale.order_type"
+              placeholder="请选择您的售后类型及物件"
+              :expand-trigger="hoverTrigger ? 'hover' : 'click'"
+              :options="options"
+              :cascade="cascade"
+              :check-strategy="'child'"
+              :show-path="true"
+              :filterable="false"
+              :disabled="active"
+            />
+          </n-form-item>
 
-        <n-form-item path="order_phone" label="手机号联系方式">
-          <n-input
-            v-model:value="aftersale.phone_number"
-            placeholder="请填入您的手机号"
-            @keydown.enter.prevent
-            :disabled="active"
-          />
-        </n-form-item>
-        <n-form-item
-          path="order_photo"
-          label="请添加与您售后相关的图片(请先填写其他信息)"
-        >
-          <n-upload
-            ref="uploadRef"
-            :headers="{
-              'Access-Control-Allow-Origin': '*',
-            }"
-            action="https://120.79.0.147:6666/api/aftersales/meletrix"
-            :data="{ phone: aftersale.phone_number, id: temp_id }"
-            :default-upload="false"
-            list-type="image-card"
-            @change="handleChange"
-            @remove="onRemove"
-            @before-upload="beforeUpload"
-            @finish="finish"
-            :max="3"
-            accept="image/png, image/jpeg"
-            :disabled="
-              aftersale.phone_number?.length != 11 ||
-              aftersale.order_number == null ||
-              aftersale.order_type == null
-            "
+          <n-form-item path="order_phone" label="手机号联系方式">
+            <n-input
+              v-model:value="aftersale.phone_number"
+              placeholder="请填入您的手机号"
+              @keydown.enter.prevent
+              :disabled="active"
+            />
+          </n-form-item>
+          <n-form-item
+            path="order_photo"
+            label="请添加与您售后相关的图片(请先填写其他信息)"
           >
-            +
-          </n-upload>
-        </n-form-item>
-        <div style="text-align: center">
-          <n-button
-            :disabled="
-              aftersale.order_number === '' ||
-              aftersale.order_type === '' ||
-              aftersale.order_number === null ||
-              aftersale.order_type === null ||
-              aftersale.phone_number === null ||
-              aftersale.phone_number.length != 11 ||
-              fileListLength == 0
-            "
-            round
-            type="primary"
-            size="large"
-            attr-type="submit"
-            @click="doClick"
-            style="margin: 4px 2px; padding: 20px 50px"
-          >
-            提交
-          </n-button>
-        </div>
-      </n-form>
-    </n-card>
-  </div>
+            <n-upload
+              ref="uploadRef"
+              :headers="{
+                'Access-Control-Allow-Origin': '*',
+              }"
+              action="https://120.79.0.147:6666/api/aftersales/meletrix"
+              :data="{ phone: aftersale.phone_number, id: temp_id }"
+              :default-upload="false"
+              list-type="image-card"
+              @change="handleChange"
+              @remove="onRemove"
+              @before-upload="beforeUpload"
+              @finish="finish"
+              :max="3"
+              accept="image/png, image/jpeg"
+              :disabled="
+                aftersale.phone_number?.length != 11 ||
+                aftersale.order_number == null ||
+                aftersale.order_type == null
+              "
+            >
+              +
+            </n-upload>
+          </n-form-item>
+          <div style="text-align: center">
+            <n-button
+              :disabled="
+                aftersale.order_number === '' ||
+                aftersale.order_type === '' ||
+                aftersale.order_number === null ||
+                aftersale.order_type === null ||
+                aftersale.phone_number === null ||
+                aftersale.phone_number.length != 11 ||
+                fileListLength == 0
+              "
+              round
+              type="primary"
+              size="large"
+              attr-type="submit"
+              @click="doClick"
+              style="margin: 4px 2px; padding: 20px 50px"
+            >
+              提交
+            </n-button>
+          </div>
+        </n-form>
+      </n-card>
+    </n-gi>
+    <n-gi :span="2"></n-gi>
+  </n-grid>
 </template>
 
 <script setup lang="ts">
@@ -106,6 +112,10 @@ const message = useMessage();
 const aftersale = useAfterSale();
 const hoverable = ref(true);
 const active = ref(false);
+const screenwidth = ref(0);
+window.onresize = () => {
+  screenwidth.value = document.body.clientWidth;
+};
 
 const doClick = async () => {
   console.log(aftersale.$state);
@@ -701,4 +711,13 @@ const options = [
 ];
 </script>
 
-<style scoped></style>
+<style scoped>
+@media (max-width: 640px) {
+  .n-card {
+    margin-top: calc(8vh);
+  }
+}
+.n-card {
+  margin-top: calc(14vh);
+}
+</style>

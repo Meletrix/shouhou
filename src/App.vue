@@ -18,4 +18,6 @@ const themeOverrides = reactive({
   </n-config-provider>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>
