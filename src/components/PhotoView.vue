@@ -9,7 +9,7 @@
       'Access-Control-Allow-Headers':
         'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization',
     }"
-    action="https://120.79.0.147:9999/api/aftersales/meletrix"
+    action="http://120.79.0.147:6666/api/aftersales/meletrix"
     :data="{ phone: aftersale.phone_number, id: temp_id }"
     list-type="image-card"
     @change="handleChange"
@@ -57,7 +57,7 @@ const onRemove = async (options: {
   const temp_data = { phone: aftersale.phone_number, id: options.file.id };
   try {
     await axios.post(
-      "https://120.79.0.147:9999/api/aftersales/delect",
+      "http://120.79.0.147:6666/api/aftersales/meletrix/delect",
       temp_data,
       {
         headers: {
