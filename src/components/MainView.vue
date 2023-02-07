@@ -114,7 +114,6 @@ const active = ref(false);
 const screenwidth = ref(window.screen.width < 640 ? true : false);
 
 const doClick = async () => {
-  active.value = true;
   try {
     await axios.post(
       "https://120.79.0.147:6666/api/aftersales/meletrix/submit",
@@ -126,6 +125,7 @@ const doClick = async () => {
       }
     );
     message.success("提交成功");
+    active.value = true;
   } catch (e: any) {
     console.log(e.response!.data.message);
 
