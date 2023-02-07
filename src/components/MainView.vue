@@ -45,7 +45,7 @@
           </n-form-item>
           <n-form-item
             path="order_photo"
-            label="请添加与您售后相关的图片(请先填写其他信息)"
+            label="请添加与您售后相关的图片(请先填写其他信息并提交信息后再上传图片)"
           >
             <n-upload
               ref="uploadRef"
@@ -54,7 +54,6 @@
               }"
               action="https://120.79.0.147:6666/api/aftersales/meletrix"
               :data="{ phone: aftersale.phone_number, id: temp_id }"
-              :default-upload="false"
               list-type="image-card"
               @change="handleChange"
               @remove="onRemove"
@@ -65,7 +64,7 @@
               :disabled="
                 aftersale.phone_number?.length != 11 ||
                 aftersale.order_number == null ||
-                aftersale.order_type == null
+                aftersale.order_type == null||!active
               "
             >
               +
@@ -79,8 +78,7 @@
                 aftersale.order_number === null ||
                 aftersale.order_type === null ||
                 aftersale.phone_number === null ||
-                aftersale.phone_number.length != 11 ||
-                fileListLength == 0
+                aftersale.phone_number.length != 11
               "
               round
               type="primary"
@@ -116,7 +114,6 @@ const screenwidth = ref(window.screen.width < 640 ? true : false);
 
 const doClick = async () => {
   console.log(aftersale.$state);
-  await uploadRef.value?.submit();
   active.value = true;
 };
 
@@ -718,3 +715,4 @@ const options = [
   margin-top: calc(14vh);
 }
 </style>
+l
