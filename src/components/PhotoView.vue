@@ -12,6 +12,7 @@
     @change="handleChange"
     @remove="onRemove"
     @before-upload="beforeUpload"
+    @finish="finish"
     :max="3"
     accept="image/png, image/jpeg"
     :disabled="
@@ -46,7 +47,9 @@ const beforeUpload = (options: {
 }) => {
   temp_id.value = options.file.id;
 };
-
+const finish = (options: { file: UploadFileInfo; event?: ProgressEvent }) => {
+  message.success("文件: " + options.file.name + "上传成功");
+};
 const onRemove = async (options: {
   file: UploadFileInfo;
   fileList: Array<UploadFileInfo>;

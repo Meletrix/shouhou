@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const cors = require("cors");
 const fs = require("fs");
-const http = require("http");
+const https = require("https");
 
 const app = express();
 
@@ -23,7 +23,7 @@ const check_filename = (phone_num, id) => {
 
 const storage_meletrix = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path + "meletrix");
+    cb(null, path + "imgs");
   },
   filename: (req, file, cb) => {
     cb(
@@ -77,11 +77,14 @@ app.use("/api/aftersales/meletrix", router);
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to aftersales meletrix." });
 });
-
-const httpServer = http.createServer(app);
+const options = {
+  key: fs.readFileSync("/root/crt/private.key"),
+  cert: fs.readFileSync("/root/crt/certificate.crt"),
+};
+const httpsServer = https.createServer(options, app);
 
 const PORT = process.env.PORT || 9001;
 
-httpServer.listen(PORT, function () {
+httpsServer.listen(PORT, function () {
   console.log(`http Server is running on port ${PORT}.`);
 });
