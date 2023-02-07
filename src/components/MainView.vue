@@ -711,7 +711,7 @@ const options = [
 <style scoped>
 @media (max-width: 640px) {
   .n-card {
-    margin-top: calc(4vh);
+    margin-top: calc(6vh);
   }
 }
 .n-card {
