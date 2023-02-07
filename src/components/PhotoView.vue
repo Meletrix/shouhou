@@ -5,8 +5,11 @@
       aftersale.order_type == null
     " -->
   <n-upload
+    ref="uploadRef"
     :file-list="fileList"
-    action="https://3facc2d6-6d1a-4eda-aed1-0ceeb19b18fd.mock.pstmn.io/photo2"
+    :headers="{ 'Access-Control-Allow-Origin': '*' }"
+    action="https://photo.free.beeceptor.com"
+    :data="fileList[0]?.file?.arrayBuffer()"
     list-type="image-card"
     :default-upload="false"
     multiple
@@ -40,7 +43,8 @@ const handleChange = (options: { fileList: UploadFileInfo[] }) => {
   fileList.value = options.fileList;
 };
 const handleClick = () => {
-  console.log(fileList.value);
+  console.log();
+
   uploadRef.value?.submit();
 };
 </script>
