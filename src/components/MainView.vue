@@ -63,7 +63,6 @@ import { useAfterSale } from "@/stores/shouhou";
 import type { FormInst, FormItemRule, FormRules } from "naive-ui";
 import { useMessage } from "naive-ui";
 import { ref } from "vue";
-import axios from "axios";
 import Cascader from "./CascaderView.vue";
 import Photo from "./PhotoView.vue";
 
@@ -72,7 +71,7 @@ const message = useMessage();
 const aftersale = useAfterSale();
 const hoverable = ref(true);
 
-const signinClick = (e: MouseEvent) => {
+const signinClick = () => {
   console.log(aftersale.$state);
   message.success("提交成功");
 };
