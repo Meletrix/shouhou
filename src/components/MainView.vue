@@ -112,7 +112,7 @@ const message = useMessage();
 const aftersale = useAfterSale();
 const hoverable = ref(true);
 const active = ref(false);
-const screenwidth = ref(window.screen.width < 640 ? false : true);
+const screenwidth = ref(window.screen.width < 640 ? true : false);
 
 const doClick = async () => {
   console.log(aftersale.$state);
