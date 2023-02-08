@@ -54,6 +54,7 @@
               }"
               action="https://120.79.0.147:9980/api/aftersales/meletrix"
               :data="{ phone: aftersale.phone_number, id: temp_id }"
+              :default-file-list="defaultList"
               list-type="image-card"
               @change="handleChange"
               @remove="onRemove"
@@ -112,6 +113,7 @@ const aftersale = useAfterSale();
 const hoverable = ref(true);
 const active = ref(false);
 const screenwidth = ref(window.screen.width < 640 ? true : false);
+var defaultList = ref<UploadFileInfo[]>([]);
 
 const doClick = async () => {
   try {
@@ -127,11 +129,50 @@ const doClick = async () => {
     message.success("提交成功");
     active.value = true;
   } catch (e: any) {
-    console.log(e.response!.data.message);
-    message.error("提交失败" + e.response!.data.message);
     if (e.response!.data.message == ":您还有未完成的售后申请") {
-      console.log(123);
+      try {
+        await axios
+          .post(
+            "https://120.79.0.147:9980/api/aftersales/meletrix/list",
+            aftersale.$state,
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          )
+          .then(function (res) {
+            const p1 = res.data[0].photo_1;
+            const p2 = res.data[0].photo_2;
+            const p3 = res.data[0].photo_3;
+            if (p1 != "NULL")
+              defaultList.value.push({
+                id: p1.substring(p1.lastIndexOf("_"), p1.lastIndexOf(".")),
+                name: p1,
+                status: "finished",
+                url: "https://120.79.0.147:9999/" + p1,
+              });
+            if (p2 != "NULL")
+              defaultList.value.push({
+                id: p2.substring(p2.lastIndexOf("_"), p2.lastIndexOf(".")),
+                name: p2,
+                status: "finished",
+                url: "https://120.79.0.147:9999/" + p2,
+              });
+            if (p2 != "NULL")
+              defaultList.value.push({
+                id: p3.substring(p3.lastIndexOf("_"), p3.lastIndexOf(".")),
+                name: p3,
+                status: "finished",
+                url: "https://120.79.0.147:9999/" + p3,
+              });
+            active.value = true;
+          });
+      } catch (e: any) {
+        console.log(e);
+      }
     }
+    message.error("提交失败" + e.response!.data.message);
   }
 };
 

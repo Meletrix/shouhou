@@ -46,6 +46,23 @@ class Aftersales {
       result(null, res);
     });
   }
+  static getListByPhone(phoneNumber, result) {
+    sql.query(
+      "SELECT * FROM meletrix where phone_number = ?",
+      phoneNumber,
+      (err, res) => {
+        if (err) {
+          console.log("error: ", err);
+          result(null, err);
+          return;
+        }
+
+        console.log("meletrix: ", res);
+        result(null, res);
+      }
+    );
+  }
+
   static create(newAftersales, result) {
     sql.query(
       `SELECT * FROM meletrix WHERE phone_number = '${newAftersales.phone_number}'`,
@@ -238,21 +255,23 @@ router.post("/", Data_meletrix.any("files"), (req, res) => {
   }
 });
 router.get("/", (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      status: "error",
-      message: "Body can not be empty!",
-    });
-  } else {
-    Aftersales.getAll((err, data) => {
-      if (err)
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving Notifys.",
-        });
-      else res.send(data);
-    });
-  }
+  Aftersales.getAll((err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving Notifys.",
+      });
+    else res.send(data);
+  });
+});
+
+router.post("/list", (req, res) => {
+  Aftersales.getListByPhone(req.body.phone_number, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving Notifys.",
+      });
+    else res.send(data);
+  });
 });
 
 router.post("/submit", (req, res) => {
