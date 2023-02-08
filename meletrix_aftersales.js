@@ -5,6 +5,7 @@ const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
 const mysql = require("mysql2");
+const { log } = require("console");
 const dbConfig = {
   HOST: "127.0.0.1",
   USER: "root",
@@ -46,24 +47,9 @@ class Aftersales {
       result(null, res);
     });
   }
-  static getListByPhone(phoneNumber, result) {
-    sql.query(
-      "SELECT * FROM meletrix where phone_number = ?",
-      phoneNumber,
-      (err, res) => {
-        if (err) {
-          console.log("error: ", err);
-          result(null, err);
-          return;
-        }
-
-        console.log("meletrix: ", res);
-        result(null, res);
-      }
-    );
-  }
 
   static create(newAftersales, result) {
+    console.log(newAftersales.phone_number);
     sql.query(
       `SELECT * FROM meletrix WHERE phone_number = '${newAftersales.phone_number}'`,
       (err, res) => {
@@ -72,22 +58,25 @@ class Aftersales {
           result(err, null);
           return;
         }
-        if (res.length != 0) {
-          result("未完成", null);
-          return;
+        console.log(res.length);
+
+        if (res.length == 1) {
+          sql.query(
+            "SELECT * FROM meletrix where phone_number = ?",
+            newAftersales.phone_number,
+            (err, res) => {
+              console.log("meletrix: ", res);
+              result(null, { flag: 0, ...res });
+              return;
+            }
+          );
+        } else {
+          sql.query("INSERT INTO meletrix SET ?", newAftersales, () => {
+            result(null, { flag: 1, ...newAftersales });
+          });
         }
       }
     );
-    sql.query("INSERT INTO meletrix SET ?", newAftersales, (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(err, null);
-        return;
-      }
-
-      console.log("created meletrix: ", { id: res.insertId, ...newAftersales });
-      result(null, { id: res.insertId, ...newAftersales });
-    });
   }
 
   static insert(photoName, phoneNumber, result) {
@@ -264,16 +253,6 @@ router.get("/", (req, res) => {
   });
 });
 
-router.post("/list", (req, res) => {
-  Aftersales.getListByPhone(req.body.phone_number, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving Notifys.",
-      });
-    else res.send(data);
-  });
-});
-
 router.post("/submit", (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -287,11 +266,7 @@ router.post("/submit", (req, res) => {
       phone_number: req.body.phone_number,
     });
     Aftersales.create(as, (err, data) => {
-      if (err)
-        res.status(500).send({
-          message: err.message || ":您还有未完成的售后申请",
-        });
-      else res.status(200).send(data);
+      res.status(200).send(data);
     });
   }
 });
@@ -303,8 +278,11 @@ router.post("/delect", (req, res) => {
       message: "Body can not be empty!",
     });
   } else {
+    console.log(req.body);
     const temp_path = path + "imgs/" + req.body.phone + "_" + req.body.id;
     const fileName = req.body.phone + "_" + req.body.id;
+    console.log(temp_path);
+    console.log(fileName);
     if (fs.existsSync(temp_path + ".jpeg")) {
       fs.unlinkSync(temp_path + ".jpeg");
       Aftersales.delete(fileName + ".jpeg", req.body.phone);
