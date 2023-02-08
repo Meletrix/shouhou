@@ -276,6 +276,35 @@ router.post("/delect", (req, res) => {
   res.end();
 });
 
+router.get("/list", (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      status: "error",
+      message: "Body can not be empty!",
+    });
+  } else {
+    const temp_path = path + "imgs/" + req.body.phone + "_" + req.body.id;
+    const fileName = req.body.phone + "_" + req.body.id;
+    if (fs.existsSync(temp_path + ".jpeg")) {
+      fs.unlinkSync(temp_path + ".jpeg");
+      Aftersales.delete(fileName + ".jpeg", req.body.phone);
+    }
+    if (fs.existsSync(temp_path + ".jpg")) {
+      fs.unlinkSync(temp_path + ".jpg");
+      Aftersales.delete(fileName + ".jpg", req.body.phone);
+    }
+    if (fs.existsSync(temp_path + ".png")) {
+      fs.unlinkSync(temp_path + ".png");
+      Aftersales.delete(fileName + ".png", req.body.phone);
+    }
+    res.status(200).send({
+      message: "Delect success",
+    });
+  }
+  res.end();
+});
+
+
 app.use("/api/aftersales/meletrix", router);
 
 app.get("/", (req, res) => {

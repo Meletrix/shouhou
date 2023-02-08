@@ -52,7 +52,7 @@
               :headers="{
                 'Access-Control-Allow-Origin': '*',
               }"
-              action="https://120.79.0.147:6666/api/aftersales/meletrix"
+              action="https://120.79.0.147:9980/api/aftersales/meletrix"
               :data="{ phone: aftersale.phone_number, id: temp_id }"
               list-type="image-card"
               @change="handleChange"
@@ -116,7 +116,7 @@ const screenwidth = ref(window.screen.width < 640 ? true : false);
 const doClick = async () => {
   try {
     await axios.post(
-      "https://120.79.0.147:6666/api/aftersales/meletrix/submit",
+      "https://120.79.0.147:9980/api/aftersales/meletrix/submit",
       aftersale.$state,
       {
         headers: {
@@ -128,8 +128,10 @@ const doClick = async () => {
     active.value = true;
   } catch (e: any) {
     console.log(e.response!.data.message);
-
     message.error("提交失败" + e.response!.data.message);
+    if (e.response!.data.message == ":您还有未完成的售后申请") {
+      console.log(123);
+    }
   }
 };
 
@@ -198,7 +200,7 @@ const onRemove = async (options: {
   const temp_data = { phone: aftersale.phone_number, id: options.file.id };
   try {
     await axios.post(
-      "https://120.79.0.147:6666/api/aftersales/meletrix/delect",
+      "https://120.79.0.147:9980/api/aftersales/meletrix/delect",
       temp_data,
       {
         headers: {
