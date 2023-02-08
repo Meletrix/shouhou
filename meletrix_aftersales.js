@@ -34,6 +34,18 @@ class Aftersales {
     this.phone_number = aftersales.phone_number;
   }
 
+  static getAll(result) {
+    sql.query("SELECT * FROM meletrix", (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      console.log("meletrix: ", res);
+      result(null, res);
+    });
+  }
   static create(newAftersales, result) {
     sql.query(
       `SELECT * FROM meletrix WHERE phone_number = '${newAftersales.phone_number}'`,
@@ -225,6 +237,23 @@ router.post("/", Data_meletrix.any("files"), (req, res) => {
     Aftersales.insert(originalFile.filename, req.body.phone);
   }
 });
+router.get("/", (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      status: "error",
+      message: "Body can not be empty!",
+    });
+  } else {
+    Aftersales.getAll((err, data) => {
+      if (err)
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving Notifys.",
+        });
+      else res.send(data);
+    });
+  }
+});
 
 router.post("/submit", (req, res) => {
   if (!req.body) {
@@ -276,47 +305,15 @@ router.post("/delect", (req, res) => {
   res.end();
 });
 
-router.get("/list", (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      status: "error",
-      message: "Body can not be empty!",
-    });
-  } else {
-    const temp_path = path + "imgs/" + req.body.phone + "_" + req.body.id;
-    const fileName = req.body.phone + "_" + req.body.id;
-    if (fs.existsSync(temp_path + ".jpeg")) {
-      fs.unlinkSync(temp_path + ".jpeg");
-      Aftersales.delete(fileName + ".jpeg", req.body.phone);
-    }
-    if (fs.existsSync(temp_path + ".jpg")) {
-      fs.unlinkSync(temp_path + ".jpg");
-      Aftersales.delete(fileName + ".jpg", req.body.phone);
-    }
-    if (fs.existsSync(temp_path + ".png")) {
-      fs.unlinkSync(temp_path + ".png");
-      Aftersales.delete(fileName + ".png", req.body.phone);
-    }
-    res.status(200).send({
-      message: "Delect success",
-    });
-  }
-  res.end();
-});
-
-
 app.use("/api/aftersales/meletrix", router);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to aftersales meletrix." });
-});
 const options = {
   key: fs.readFileSync("/root/crt/private.key"),
   cert: fs.readFileSync("/root/crt/certificate.crt"),
 };
 const httpsServer = https.createServer(options, app);
 
-const PORT = process.env.PORT || 6666;
+const PORT = process.env.PORT || 9980;
 
 httpsServer.listen(PORT, function () {
   console.log(`http Server is running on port ${PORT}.`);
